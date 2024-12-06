@@ -5,6 +5,12 @@ struct ContentView: View {
     @StateObject var viewModel = ContentViewModel()
     @Environment(\.softwareKeyboard) var softwareKeyboard
     
+    let predefinedPaths = [
+        "/content/blog",
+        "/content/shorts",
+        "/content/books"
+    ]
+    
     var body: some View {
         Form{
             Section(header: Text("Front Matter")) {
@@ -48,7 +54,49 @@ struct ContentView: View {
         } message: {
             Text("Do you want to upload this file?")
         }
+        .actionSheet(isPresented: $viewModel.showPathSelection) {
+            ActionSheet(
+                title: Text("Select Upload Path"),
+                message: Text("Choose or enter a path (default: content)"),
+                buttons: pathSelectionButtons
+            )
+        }
+        .alert("Enter Custom Path", isPresented: $viewModel.showCustomPathInput) {
+            TextField("Path", text: $viewModel.customPath)
+            Button("Cancel", role: .cancel) { }
+            Button("Confirm") {
+                viewModel.uploadContent(path: viewModel.customPath)
+            }
+        } message: {
+            Text("Start with /content/")
+        }
+        .alert(viewModel.alertMessage, isPresented: $viewModel.showAlert) {
+            Button("OK", role: .cancel) { }
+        }
         
+        
+        //buttons-path selection
+        var pathSelectionButtons: [ActionSheet.Button] {
+            var buttons = predefinedPaths.map { path in
+                ActionSheet.Button.default(Text(path)) {
+                    viewModel.uploadContent(path: path)
+                }
+            }
+            
+            buttons += [
+                .default(Text("Custom Path")) {
+                    viewModel.showCustomPathInput = true
+                },
+                .default(Text("Default (content)")) {
+                    viewModel.uploadContent(path: "/content")
+                },
+                .cancel()
+            ]
+            
+            return buttons
+        }
+        
+        //keyboard button -  Done
         if softwareKeyboard?.isVisible == true {
             HStack {
                 Spacer() // 将按钮推到最右侧
