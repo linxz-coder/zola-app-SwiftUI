@@ -1,0 +1,15 @@
+{
+  "originHash" : "96c5470ec682a8ff58c6920efe97eca525c73529067047833799c7eec1c59fd1",
+  "pins" : [
+    {
+      "identity" : "swiftui-keyboard-observer",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cgaaf/SwiftUI-Keyboard-Observer.git",
+      "state" : {
+        "revision" : "bd45c696069a1ac770fcc2bc63c29cfafaa90233",
+        "version" : "0.1.0"
+      }
+    }
+  ],
+  "version" : 3
+}
