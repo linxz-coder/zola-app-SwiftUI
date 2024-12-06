@@ -1,6 +1,24 @@
 {
-  "originHash" : "96c5470ec682a8ff58c6920efe97eca525c73529067047833799c7eec1c59fd1",
+  "originHash" : "845790d80679b426e05bb2d3b03076262845475366c752878c9a1bf54d87fcdf",
   "pins" : [
+    {
+      "identity" : "down",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/johnxnguyen/Down.git",
+      "state" : {
+        "revision" : "f34b166be1f1db4aa8f573067e901d72f2a6be57",
+        "version" : "0.11.0"
+      }
+    },
+    {
+      "identity" : "swiftdown",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/qeude/SwiftDown.git",
+      "state" : {
+        "revision" : "3a988bfa50ffbc55ee312749c326f8791d7f87ad",
+        "version" : "0.4.1"
+      }
+    },
     {
       "identity" : "swiftui-keyboard-observer",
       "kind" : "remoteSourceControl",

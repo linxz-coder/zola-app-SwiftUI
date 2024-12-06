@@ -1,25 +1,17 @@
-// GitHubService.swift
 import Foundation
 
 class GitHubService {
     static let shared = GitHubService()
-    
-    private let owner = "linxz-coder"
-    private let repo = "zola-basic"
     private let branch = "main"
-//    private let path = "content/blog"
-    private let token: String
-    
-    init() {
-        // 从配置文件中读取 token
-        guard let token = Bundle.main.object(forInfoDictionaryKey: "GITHUB_API_TOKEN") as? String else {
-            fatalError("GitHub token not found in configuration")
-        }
-        self.token = token
-    }
     
     func uploadContent(content: String, filename: String, path: String = "content/blog", completion: @escaping (Result<Void, Error>) -> Void) {
-        let endpoint = "https://api.github.com/repos/\(owner)/\(repo)/contents/\(path)/\(filename)"
+        let settings = UserSettings.shared
+        guard settings.isConfigured else {
+            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "GitHub settings not configured"])))
+            return
+        }
+        
+        let endpoint = "https://api.github.com/repos/\(settings.githubUsername)/\(settings.githubRepo)/contents/\(path)/\(filename)"
         
         guard let url = URL(string: endpoint),
               let contentData = content.data(using: .utf8) else {
@@ -31,7 +23,7 @@ class GitHubService {
         
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(settings.githubToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let parameters: [String: Any] = [
@@ -52,7 +44,13 @@ class GitHubService {
                (200...299).contains(httpResponse.statusCode) {
                 completion(.success(()))
             } else {
-                completion(.failure(NSError(domain: "", code: -1)))
+                if let data = data,
+                   let errorMessage = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let message = errorMessage["message"] as? String {
+                    completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: message])))
+                } else {
+                    completion(.failure(NSError(domain: "", code: -1)))
+                }
             }
         }.resume()
     }
