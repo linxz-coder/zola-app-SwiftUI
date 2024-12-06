@@ -4,6 +4,7 @@ import SwiftDown
 struct ContentView: View {
     @StateObject var viewModel = ContentViewModel()
     @Environment(\.softwareKeyboard) var softwareKeyboard
+    @Environment(\.colorScheme) var colorScheme  // 添加这一行来检测系统主题
     @StateObject var settings = UserSettings.shared
     @State var showingSettings = false
     
@@ -28,7 +29,7 @@ struct ContentView: View {
                         
                         Section(header: Text("Content")) {
                             SwiftDownEditor(text: $viewModel.content)
-                                .theme(Theme.BuiltIn.defaultLight.theme())
+                                .theme(colorScheme == .dark ? Theme.BuiltIn.defaultDark.theme() : Theme.BuiltIn.defaultLight.theme())
                                 .frame(height: 200)
                         }
                         
