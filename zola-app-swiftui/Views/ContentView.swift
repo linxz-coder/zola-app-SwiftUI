@@ -47,10 +47,18 @@ struct ContentView: View {
                                     viewModel.showUploadAlert = true
                                 }
                                 .buttonStyle(.borderedProminent)
+                                .frame(width:100)
+                                Button("Check Articles") {
+                                    viewModel.showPathSelection = true
+//                                    viewModel.isCheckingArticles = true
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .frame(width:100)
                                 Button("Source Text"){
                                     viewModel.showSourceText = true
                                 }
                                 .buttonStyle(.borderedProminent)
+                                .frame(width:100)
                             }
                         }
                         .listRowBackground(Color.clear)
