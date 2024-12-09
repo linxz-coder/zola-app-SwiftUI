@@ -8,6 +8,9 @@ struct ContentView: View {
     @StateObject var settings = UserSettings.shared
     @State var showingSettings = false
     
+    let myDarkTheme = Theme(themePath: Bundle.main.path(forResource: "myDarkTheme", ofType: "json")!)
+
+    
     let predefinedPaths = [
         "/content/blog",
         "/content/shorts",
@@ -29,7 +32,7 @@ struct ContentView: View {
                         
                         Section(header: Text("Content")) {
                             SwiftDownEditor(text: $viewModel.content)
-                                .theme(colorScheme == .dark ? Theme.BuiltIn.defaultDark.theme() : Theme.BuiltIn.defaultLight.theme())
+                                .theme(colorScheme == .dark ? myDarkTheme : Theme.BuiltIn.defaultLight.theme())
                                 .frame(height: 200)
                         }
                         

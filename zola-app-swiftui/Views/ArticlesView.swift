@@ -64,10 +64,17 @@ struct ArticlesListView: View {
                     }
                 }
             }
-            .navigationTitle("Articles in \(viewModel.selectedPath)")
-            .navigationBarItems(trailing: Button("Done") {
-                dismiss()
-            })
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Articles in \(viewModel.selectedPath)")
+                        .font(.system(size: 16))
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
         }
         .sheet(item: $viewModel.selectedArticleContent) { article in
             ArticleDetailView(title: article.title, content: article.content)
