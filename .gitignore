@@ -1,2 +1,3 @@
 .DS_Store
-zola-app-swiftui/Config.xcconfig
+zola-app-swiftui/Config.xcconfig*.xcuserstate
+xcuserdata/
