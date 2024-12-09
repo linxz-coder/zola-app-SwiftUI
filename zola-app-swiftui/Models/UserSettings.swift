@@ -30,4 +30,17 @@ class UserSettings: ObservableObject {
     var isConfigured: Bool {
         !githubUsername.isEmpty && !githubRepo.isEmpty && !githubToken.isEmpty
     }
+    
+    // 添加登出方法
+    func logout() {
+        // 清除所有保存的数据
+        githubUsername = ""
+        githubRepo = ""
+        githubToken = ""
+        
+        // 可选：清除 UserDefaults 中的所有数据
+//        if let bundleID = Bundle.main.bundleIdentifier {
+//            UserDefaults.standard.removePersistentDomain(forName: bundleID)
+//        }
+    }
 }
