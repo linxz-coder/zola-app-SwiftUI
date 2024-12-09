@@ -50,7 +50,7 @@ struct ContentView: View {
                                 .frame(width:100)
                                 Button("Check Articles") {
                                     viewModel.showPathSelection = true
-//                                    viewModel.isCheckingArticles = true
+                                    viewModel.isCheckingArticles = true
                                 }
                                 .buttonStyle(.borderedProminent)
                                 .frame(width:100)
@@ -70,10 +70,10 @@ struct ContentView: View {
                             .font(.title)
                             .padding()
                         
-                        Text("Please configure your GitHub settings to continue")
-                            .foregroundColor(.secondary)
+//                        Text("Please configure your GitHub settings to continue")
+//                            .foregroundColor(.secondary)
                         
-                        Button("Configure Settings") {
+                        Button("Configure GitHub Settings") {
                             showingSettings = true
                         }
                         .buttonStyle(.borderedProminent)
@@ -117,8 +117,18 @@ struct ContentView: View {
                         }
                         
                         Section {
-                            Text("These settings will be saved and remembered even after you close the app.")
+                            Text("These settings will be saved locally and remembered even after you close the app.")
                                 .foregroundColor(.secondary)
+                        }
+                        
+                        Section {
+                            Button(action: {
+                                settings.logout()
+                                showingSettings = false
+                            }) {
+                                Text("Logout")
+                                    .foregroundColor(.red)
+                            }
                         }
                     }
                     .navigationTitle("Settings")
@@ -134,6 +144,7 @@ struct ContentView: View {
             .alert("Confirm Upload", isPresented: $viewModel.showUploadAlert) {
                 Button("Cancel", role: .cancel) { }
                 Button("Confirm") {
+                    viewModel.isCheckingArticles = false  // 重置状态
                     viewModel.showPathSelection = true
                 }
             } message: {
@@ -150,7 +161,11 @@ struct ContentView: View {
                 TextField("Path", text: $viewModel.customPath)
                 Button("Cancel", role: .cancel) { }
                 Button("Confirm") {
-                    viewModel.uploadContent(path: viewModel.customPath)
+                    if viewModel.customPathIsForArticles {
+                        viewModel.fetchArticles(from: viewModel.customPath)
+                    } else {
+                        viewModel.uploadContent(path: viewModel.customPath)
+                    }
                 }
             } message: {
                 Text("Start with /content/")
@@ -158,22 +173,34 @@ struct ContentView: View {
             .alert(viewModel.alertMessage, isPresented: $viewModel.showAlert) {
                 Button("OK", role: .cancel) { }
             }
+            .sheet(isPresented: $viewModel.showArticlesList) {
+                ArticlesListView(viewModel: viewModel)
+            }
         }
     }
     
     var pathSelectionButtons: [ActionSheet.Button] {
         var buttons = predefinedPaths.map { path in
             ActionSheet.Button.default(Text(path)) {
-                viewModel.uploadContent(path: path)
+                if viewModel.isCheckingArticles {
+                    viewModel.fetchArticles(from: path)
+                } else {
+                    viewModel.uploadContent(path: path)
+                }
             }
         }
         
         buttons += [
             .default(Text("Custom Path")) {
                 viewModel.showCustomPathInput = true
+                viewModel.customPathIsForArticles = viewModel.isCheckingArticles
             },
             .default(Text("Default (content)")) {
-                viewModel.uploadContent(path: "/content")
+                if viewModel.isCheckingArticles {
+                    viewModel.fetchArticles(from: "/content")
+                } else {
+                    viewModel.uploadContent(path: "/content")
+                }
             },
             .cancel()
         ]
