@@ -3,8 +3,10 @@ import SwiftDown
 
 struct ContentView: View {
     @StateObject var viewModel = ContentViewModel()
-    @Environment(\.softwareKeyboard) var softwareKeyboard
     @Environment(\.colorScheme) var colorScheme  // 添加这一行来检测系统主题
+//    @Environment(\.softwareKeyboard) var softwareKeyboard
+    @FocusState private var isFocused: Bool
+    
     @StateObject var settings = UserSettings.shared
     @State var showingSettings = false
     
@@ -26,20 +28,24 @@ struct ContentView: View {
                             TextField("Title", text:$viewModel.title)
                                 .frame(height:50)
                                 .font(.title2)
+                                .focused($isFocused)
                             DatePicker("Date", selection: $viewModel.date, displayedComponents: .date)
                             TextField("Author", text: $viewModel.author)
+                                .focused($isFocused)
                         }
                         
                         Section(header: Text("Content")) {
                             SwiftDownEditor(text: $viewModel.content)
                                 .theme(colorScheme == .dark ? myDarkTheme : Theme.BuiltIn.defaultLight.theme())
                                 .frame(height: 200)
+                                .focused($isFocused)
                         }
                         
                         Section(header: Text("Tags")) {
                             ForEach(0..<3) { index in
                                 if index == 0 || !viewModel.tags[index - 1].isEmpty {
                                     TextField("Tag \(index + 1)", text: $viewModel.tags[index])
+                                        .focused($isFocused)
                                 }
                             }
                         }
@@ -82,63 +88,34 @@ struct ContentView: View {
                         .buttonStyle(.borderedProminent)
                     }
                 }
-                // keyboard button现在在ZStack内部
-                if softwareKeyboard?.isVisible == true {
-                    HStack {
-                        Spacer()
-                        Button("Done") {
-                            softwareKeyboard?.dismiss()
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .padding()
-                    }
-                    .frame(height: 45)
-                    .background(Color(UIColor.systemBackground))
-                    .animation(.none, value: softwareKeyboard?.isVisible)  // 移除动画效果
-                    .transition(.identity)  // 使用 identity transition 移除过渡动画
-                }
             }
             .navigationTitle("Zola Now")
             
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
+                    if isFocused {
+                        Button("Done") {
+                            isFocused = false
+                        }
+                    }
+                    
                     Button(action: {
                         showingSettings = true
                     }) {
                         Image(systemName: "gear")
                     }
                 }
+                
+//                ToolbarItemGroup(placement: .keyboard) {
+//                        Spacer()
+//                        Button("Done") {
+//                            isFocused = false
+//                        }
+//                    }
             }
             
             .sheet(isPresented: $showingSettings) {
-                NavigationView {
-                    Form {
-                        Section(header: Text("GitHub Settings")) {
-                            TextField("Username", text: $settings.githubUsername)
-                            TextField("Repository", text: $settings.githubRepo)
-                            SecureField("GitHub Token", text: $settings.githubToken)
-                        }
-                        
-                        Section {
-                            Text("These settings will be saved locally and remembered even after you close the app.")
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Section {
-                            Button(action: {
-                                settings.logout()
-                                showingSettings = false
-                            }) {
-                                Text("Logout")
-                                    .foregroundColor(.red)
-                            }
-                        }
-                    }
-                    .navigationTitle("Settings")
-                    .navigationBarItems(trailing: Button("Done") {
-                        showingSettings = false
-                    })
-                }
+                SettingsView(settings: settings)
             }
             
             .sheet(isPresented: $viewModel.showSourceText) {

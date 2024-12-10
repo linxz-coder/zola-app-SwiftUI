@@ -6,14 +6,14 @@
 //
 
 import SwiftUI
-import SwiftUI_Keyboard_Observer
+//import SwiftUI_Keyboard_Observer
 
 @main
 struct zola_app_swiftuiApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .observeSoftwareKeyboard()
+//                .observeSoftwareKeyboard()
         }
     }
 }

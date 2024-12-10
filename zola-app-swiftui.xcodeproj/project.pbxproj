@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8FFF1BF02D02A21B00C27FDA /* SwiftUI Keyboard Observer in Frameworks */ = {isa = PBXBuildFile; productRef = 8FFF1BEF2D02A21B00C27FDA /* SwiftUI Keyboard Observer */; };
 		8FFF1BFB2D02E47B00C27FDA /* SwiftDown in Frameworks */ = {isa = PBXBuildFile; productRef = 8FFF1BFA2D02E47B00C27FDA /* SwiftDown */; };
 /* End PBXBuildFile section */
 
@@ -42,7 +41,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8FFF1BFB2D02E47B00C27FDA /* SwiftDown in Frameworks */,
-				8FFF1BF02D02A21B00C27FDA /* SwiftUI Keyboard Observer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,7 +83,6 @@
 			);
 			name = "zola-app-swiftui";
 			packageProductDependencies = (
-				8FFF1BEF2D02A21B00C27FDA /* SwiftUI Keyboard Observer */,
 				8FFF1BFA2D02E47B00C27FDA /* SwiftDown */,
 			);
 			productName = "zola-app-swiftui";
@@ -117,7 +114,6 @@
 			mainGroup = 8FFF1BBC2D028E1900C27FDA;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				8FFF1BEE2D02A21B00C27FDA /* XCRemoteSwiftPackageReference "SwiftUI-Keyboard-Observer" */,
 				8FFF1BF92D02E47B00C27FDA /* XCRemoteSwiftPackageReference "SwiftDown" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -360,14 +356,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		8FFF1BEE2D02A21B00C27FDA /* XCRemoteSwiftPackageReference "SwiftUI-Keyboard-Observer" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/cgaaf/SwiftUI-Keyboard-Observer.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.0;
-			};
-		};
 		8FFF1BF92D02E47B00C27FDA /* XCRemoteSwiftPackageReference "SwiftDown" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/qeude/SwiftDown.git";
@@ -379,11 +367,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		8FFF1BEF2D02A21B00C27FDA /* SwiftUI Keyboard Observer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8FFF1BEE2D02A21B00C27FDA /* XCRemoteSwiftPackageReference "SwiftUI-Keyboard-Observer" */;
-			productName = "SwiftUI Keyboard Observer";
-		};
 		8FFF1BFA2D02E47B00C27FDA /* SwiftDown */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8FFF1BF92D02E47B00C27FDA /* XCRemoteSwiftPackageReference "SwiftDown" */;
