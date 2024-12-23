@@ -2,15 +2,13 @@ import SwiftUI
 import SwiftDown
 
 struct ContentView: View {
-    @StateObject var viewModel = ContentViewModel()
+    
     @Environment(\.softwareKeyboard) var softwareKeyboard
-    @Environment(\.colorScheme) var colorScheme  // 添加这一行来检测系统主题
+    
+    @StateObject var viewModel = ContentViewModel()
     @StateObject var settings = UserSettings.shared
     @State var showingSettings = false
-    
-    let myDarkTheme = Theme(themePath: Bundle.main.path(forResource: "myDarkTheme", ofType: "json")!)
 
-    
     let predefinedPaths = [
         "/content/blog",
         "/content/shorts",
@@ -18,127 +16,28 @@ struct ContentView: View {
     ]
     
     var body: some View {
-        NavigationView {
-            ZStack(alignment: .bottom) {
-                if settings.isConfigured {
-                    Form {
-                        Section(header: Text("Front Matter")) {
-                            TextField("Title", text:$viewModel.title)
-                                .frame(height:50)
-                                .font(.title2)
-                            DatePicker("Date", selection: $viewModel.date, displayedComponents: .date)
-                            TextField("Author", text: $viewModel.author)
-                        }
-                        
-                        Section(header: Text("Content")) {
-                            SwiftDownEditor(text: $viewModel.content)
-                                .theme(colorScheme == .dark ? myDarkTheme : Theme.BuiltIn.defaultLight.theme())
-                                .frame(height: 200)
-                        }
-                        
-                        Section(header: Text("Tags")) {
-                            ForEach(0..<3) { index in
-                                if index == 0 || !viewModel.tags[index - 1].isEmpty {
-                                    TextField("Tag \(index + 1)", text: $viewModel.tags[index])
-                                }
-                            }
-                        }
-                        
-                        Section {
-                            HStack(spacing: 30) {
-                                Button("Upload to Zola"){
-                                    viewModel.showUploadAlert = true
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .frame(width:100)
-                                Button("Check Articles") {
-                                    viewModel.showPathSelection = true
-                                    viewModel.isCheckingArticles = true
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .frame(width:100)
-                                Button("Source Text"){
-                                    viewModel.showSourceText = true
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .frame(width:100)
-                            }
-                        }
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    }
-                } else {
-                    VStack(spacing: 20) {
-                        Text("Welcome to Zola Now")
-                            .font(.title)
-                            .padding()
-                        
-//                        Text("Please configure your GitHub settings to continue")
-//                            .foregroundColor(.secondary)
-                        
-                        Button("Configure GitHub Settings") {
-                            showingSettings = true
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
-                }
-                // keyboard button现在在ZStack内部
-                if softwareKeyboard?.isVisible == true {
-                    HStack {
-                        Spacer()
+        NavigationStack {
+            FormView(viewModel: viewModel, showingSettings: $showingSettings)
+            .navigationTitle("Zola Now")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    
+                    if softwareKeyboard?.isVisible == true {
                         Button("Done") {
                             softwareKeyboard?.dismiss()
                         }
-                        .buttonStyle(.borderedProminent)
-                        .padding()
-                    }
-                    .frame(height: 45)
-                    .background(Color(UIColor.systemBackground))
-                    .animation(.none, value: softwareKeyboard?.isVisible)  // 移除动画效果
-                    .transition(.identity)  // 使用 identity transition 移除过渡动画
-                }
-            }
-            .navigationTitle("Zola Now")
-            
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingSettings = true
-                    }) {
-                        Image(systemName: "gear")
+                    } else {
+                        Button(action: {
+                            showingSettings = true
+                        }) {
+                            Image(systemName: "gear")
+                        }
                     }
                 }
             }
             
             .sheet(isPresented: $showingSettings) {
-                NavigationView {
-                    Form {
-                        Section(header: Text("GitHub Settings")) {
-                            TextField("Username", text: $settings.githubUsername)
-                            TextField("Repository", text: $settings.githubRepo)
-                            SecureField("GitHub Token", text: $settings.githubToken)
-                        }
-                        
-                        Section {
-                            Text("These settings will be saved locally and remembered even after you close the app.")
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Section {
-                            Button(action: {
-                                settings.logout()
-                                showingSettings = false
-                            }) {
-                                Text("Logout")
-                                    .foregroundColor(.red)
-                            }
-                        }
-                    }
-                    .navigationTitle("Settings")
-                    .navigationBarItems(trailing: Button("Done") {
-                        showingSettings = false
-                    })
-                }
+                SettingView(showingSettings: $showingSettings)
             }
             
             .sheet(isPresented: $viewModel.showSourceText) {
@@ -179,7 +78,7 @@ struct ContentView: View {
             .sheet(isPresented: $viewModel.showArticlesList) {
                 ArticlesListView(viewModel: viewModel)
             }
-        }
+        }.environmentObject(settings)
     }
     
     var pathSelectionButtons: [ActionSheet.Button] {
